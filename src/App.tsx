@@ -5,6 +5,7 @@ import { ArrowDownward, FormatAlignRightSharp } from "@material-ui/icons";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { Tree, TreeNode } from "react-organizational-chart";
 
 const dimensions = [
   { id: "strategy", content: "Strategy", color: "rgba(255, 0, 0, 0.12)" },
@@ -77,9 +78,13 @@ const allocations = [
   },
 ];
 
-const aggregate = (allocations: any[], field: string) => {
+const aggregate = (allocations: any[], field: string = "total") => {
   const aggs = allocations.reduce((agg: any, alloc: any) => {
-    agg[alloc[field]] = (agg[alloc[field]] ?? 0) + alloc.amount;
+    if (field === "total") {
+      agg.total = (agg.total ?? 0) + alloc.amount;
+    } else {
+      agg[alloc[field]] = (agg[alloc[field]] ?? 0) + alloc.amount;
+    }
     return agg;
   }, {});
   return aggs;
@@ -148,23 +153,103 @@ const App = (props: any) => {
     setItems(newItems);
   };
 
+  const buildTree = (allocs: any, levels: any) => {
+    if (levels.length === 0) return;
+    const newLevels = JSON.parse(JSON.stringify(levels));
+    const thisLevel = newLevels.shift();
+    console.log("This Level: ", thisLevel);
+    const aggs = aggregate(allocs, thisLevel.id);
+    const dimVals = Object.keys(aggs);
+    console.log(newLevels);
+    const results: any = {};
+    const result: any = {};
+    dimVals.forEach((dv: string) => {
+      results[dv] = {};
+      results[dv].root = aggs[dv];
+      results[dv].children = buildTree(
+        allocs.filter((alloc: any) => alloc[thisLevel.id] == dv),
+        newLevels
+      );
+    });
+    result[thisLevel.id] = results;
+    console.log(result);
+    return result;
+  };
+
   const DimensionBlock = styled.div`
-    text-decoration: none;
-    color: #000;
-    margin: 20px;
-    background: #ffc;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
+    display: inline-block;
     height: 5em;
     width: 8em;
-    padding: 1em;
     box-shadow: 3px 4px 6px rgba(33, 33, 33, 0.7);
   `;
+
+  const DimensionBlockInner = styled.div`
+    text-decoration: none;
+    padding: 1em;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    color: #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    background-color: inherit;
+  `;
+
+  const TreeItem = ({ level, item, value }: any) => (
+    <DimensionBlock
+      style={{
+        backgroundColor: dimensions.filter((dim: any) => dim.id === level)[0]
+          .color,
+      }}
+    >
+      <DimensionBlockInner>
+        <div>{level}</div>
+        <div>{item}</div>
+        <div>${value}</div>
+      </DimensionBlockInner>
+    </DimensionBlock>
+  );
+
+  const TreeLevel = ({ level, items }: any) => {
+    console.group("TreeLevel");
+    console.log(level);
+    console.log(items);
+    console.groupEnd();
+    return (
+      <>
+        {Object.keys(items).map((item: any) => {
+          const childLevel =
+            items[item].children && Object.keys(items[item].children).length > 0
+              ? Object.keys(items[item].children)[0]
+              : null;
+          return (
+            <TreeNode
+              label={
+                <TreeItem level={level} item={item} value={items[item].root} />
+              }
+            >
+              {childLevel && (
+                <TreeLevel
+                  level={childLevel}
+                  items={items[item].children[childLevel]}
+                />
+              )}
+            </TreeNode>
+          );
+        })}
+      </>
+    );
+  };
 
   // Normally you would want to split things out into separate components.
   // But in this example everything is just done in one place for simplicity
   if (!items) return null;
+  const tree = buildTree(allocations, items);
+  console.log(tree);
+  const rootLevel = tree ? Object.keys(tree)[0] : "";
+  console.log(rootLevel);
   return (
     <>
       <Global
@@ -184,7 +269,7 @@ const App = (props: any) => {
               style={{
                 display: "flex",
                 flexDirection: "row",
-                margin: "0 auto",
+                margin: "60px auto 60px 0",
                 justifyContent: "space-around",
               }}
             >
@@ -235,26 +320,31 @@ const App = (props: any) => {
           margin: "0 auto",
         }}
       >
-        {items.map((item: any, key: number) => {
-          const aggs = aggregate(allocations, item.id);
-          return (
-            <div style={{ display: "flex", flexDirection: "row" }}>
-              {Object.keys(aggs).map((agg: any) => (
-                <DimensionBlock
-                  style={{
-                    backgroundColor: item.color,
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <div>{item.content}</div>
-                  <div>{agg}</div>
-                  <div>${aggs[agg]}</div>
-                </DimensionBlock>
-              ))}
-            </div>
-          );
-        })}
+        {tree && (
+          <Tree
+            lineWidth={"2px"}
+            lineColor={"green"}
+            lineBorderRadius={"10px"}
+            label={
+              <DimensionBlock
+                style={{
+                  backgroundColor: "lightgray",
+                  display: "flex",
+                  flexDirection: "column",
+                  margin: "0 auto",
+                }}
+              >
+                <DimensionBlockInner>
+                  <div>Fluffery</div>
+                  <div>Name</div>
+                  <div>${aggregate(allocations).total}</div>
+                </DimensionBlockInner>
+              </DimensionBlock>
+            }
+          >
+            <TreeLevel level={rootLevel} items={tree[rootLevel]} />
+          </Tree>
+        )}
       </div>
     </>
   );
