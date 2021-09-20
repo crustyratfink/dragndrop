@@ -1,6 +1,7 @@
 import { css, Global } from "@emotion/react";
 import styled from "@emotion/styled";
 import { Button } from "@material-ui/core";
+import { CancelOutlined } from "@material-ui/icons";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -109,7 +110,7 @@ const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
   color: "white",
   // change background colour if dragging
   background: isDragging ? "darkorchid" : "indigo",
-
+  display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 20,
   // styles we need to apply on draggables
   ...draggableStyle,
 });
@@ -130,6 +131,12 @@ const App = (props: any) => {
     setItems(dimensions);
     setReset(false);
   }, [reset]);
+
+  const shutUp = (itemId: string) => {
+    const newItems = items.filter((item:any) => (item.id!=itemId))
+    setDisappear(false);
+    setItems(newItems);
+  }
 
   const onDragStart = () => {
     setDisappear(true);
@@ -298,6 +305,7 @@ const App = (props: any) => {
                         )}
                       >
                         {item.content}
+                        <CancelOutlined onClick={() => shutUp(item.id)}/>
                       </div>
                     )}
                   </Draggable>
