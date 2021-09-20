@@ -78,6 +78,27 @@ const allocations = [
   },
 ];
 
+const DimensionBlock = styled.div`
+  display: inline-block;
+  height: 5em;
+  width: 8em;
+  box-shadow: 3px 4px 6px rgba(33, 33, 33, 0.7);
+`;
+
+const DimensionBlockInner = styled.div`
+  text-decoration: none;
+  padding: 1em;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  color: #000;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  background-color: inherit;
+`;
+
 const aggregate = (allocations: any[], field: string = "total") => {
   const aggs = allocations.reduce((agg: any, alloc: any) => {
     if (field === "total") {
@@ -90,27 +111,29 @@ const aggregate = (allocations: any[], field: string = "total") => {
   return aggs;
 };
 
-// a little function to help us with reordering the result
 const reorder = (list: any[], startIndex: number, endIndex: number) => {
   const result = Array.from(list);
   const [removed] = result.splice(startIndex, 1);
   result.splice(endIndex, 0, removed);
-
   return result;
 };
 
 const grid = 8;
 
 const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
-  // some basic styles to make the items look a bit nicer
   userSelect: "none",
   padding: `${grid}px ${grid * 2}px ${grid}px ${grid * 2}px`,
   margin: `0 ${grid}px 0 0`,
   borderRadius: 999,
   color: "white",
+
   // change background colour if dragging
   background: isDragging ? "darkorchid" : "indigo",
-  display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 20,
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 20,
+
   // styles we need to apply on draggables
   ...draggableStyle,
 });
@@ -122,7 +145,7 @@ const getListStyle = (isDraggingOver: boolean) => ({
   overflow: "auto",
 });
 
-const App = (props: any) => {
+const App = () => {
   aggregate(allocations, "publisher");
   const [items, setItems] = useState<any>([]);
   const [reset, setReset] = useState<boolean>(false);
@@ -133,10 +156,10 @@ const App = (props: any) => {
   }, [reset]);
 
   const shutUp = (itemId: string) => {
-    const newItems = items.filter((item:any) => (item.id!=itemId))
+    const newItems = items.filter((item: any) => item.id != itemId);
     setDisappear(false);
     setItems(newItems);
-  }
+  };
 
   const onDragStart = () => {
     setDisappear(true);
@@ -147,14 +170,11 @@ const App = (props: any) => {
     if (!result.destination) {
       return;
     }
-
     const newItems = reorder(
       items,
       result.source.index,
       result.destination.index
     );
-
-    console.log(newItems);
     setDisappear(false);
     setItems(newItems);
   };
@@ -163,10 +183,8 @@ const App = (props: any) => {
     if (levels.length === 0) return;
     const newLevels = JSON.parse(JSON.stringify(levels));
     const thisLevel = newLevels.shift();
-    console.log("This Level: ", thisLevel);
     const aggs = aggregate(allocs, thisLevel.id);
     const dimVals = Object.keys(aggs);
-    console.log(newLevels);
     const results: any = {};
     const result: any = {};
     dimVals.forEach((dv: string) => {
@@ -178,30 +196,8 @@ const App = (props: any) => {
       );
     });
     result[thisLevel.id] = results;
-    console.log(result);
     return result;
   };
-
-  const DimensionBlock = styled.div`
-    display: inline-block;
-    height: 5em;
-    width: 8em;
-    box-shadow: 3px 4px 6px rgba(33, 33, 33, 0.7);
-  `;
-
-  const DimensionBlockInner = styled.div`
-    text-decoration: none;
-    padding: 1em;
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
-    color: #000;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-    background-color: inherit;
-  `;
 
   const TreeItem = ({ level, item, value }: any) => (
     <DimensionBlock
@@ -219,10 +215,6 @@ const App = (props: any) => {
   );
 
   const TreeLevel = ({ level, items }: any) => {
-    console.group("TreeLevel");
-    console.log(level);
-    console.log(items);
-    console.groupEnd();
     return (
       <>
         {Object.keys(items).map((item: any) => {
@@ -249,13 +241,9 @@ const App = (props: any) => {
     );
   };
 
-  // Normally you would want to split things out into separate components.
-  // But in this example everything is just done in one place for simplicity
   if (!items) return null;
   const tree = buildTree(allocations, items);
-  console.log(tree);
   const rootLevel = tree ? Object.keys(tree)[0] : "";
-  console.log(rootLevel);
   return (
     <>
       <Global
@@ -305,7 +293,7 @@ const App = (props: any) => {
                         )}
                       >
                         {item.content}
-                        <CancelOutlined onClick={() => shutUp(item.id)}/>
+                        <CancelOutlined onClick={() => shutUp(item.id)} />
                       </div>
                     )}
                   </Draggable>
@@ -342,7 +330,7 @@ const App = (props: any) => {
                 }}
               >
                 <DimensionBlockInner>
-                  <div>Fluffery</div>
+                  <div>Campaign</div>
                   <div>Name</div>
                   <div>${aggregate(allocations).total}</div>
                 </DimensionBlockInner>
@@ -358,5 +346,3 @@ const App = (props: any) => {
 };
 
 export default App;
-
-//{//key < items.length - 1 && <ArrowDownward fontSize="large" />}
