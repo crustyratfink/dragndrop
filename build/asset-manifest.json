@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/dragndrop/static/css/main.6dea0f05.chunk.css",
-    "main.js": "/dragndrop/static/js/main.48ef9043.chunk.js",
-    "main.js.map": "/dragndrop/static/js/main.48ef9043.chunk.js.map",
-    "runtime-main.js": "/dragndrop/static/js/runtime-main.b6f44378.js",
-    "runtime-main.js.map": "/dragndrop/static/js/runtime-main.b6f44378.js.map",
-    "static/js/2.a486d477.chunk.js": "/dragndrop/static/js/2.a486d477.chunk.js",
-    "static/js/2.a486d477.chunk.js.map": "/dragndrop/static/js/2.a486d477.chunk.js.map",
-    "static/js/3.b132d58e.chunk.js": "/dragndrop/static/js/3.b132d58e.chunk.js",
-    "static/js/3.b132d58e.chunk.js.map": "/dragndrop/static/js/3.b132d58e.chunk.js.map",
+    "main.js": "/dragndrop/static/js/main.611d5e30.chunk.js",
+    "main.js.map": "/dragndrop/static/js/main.611d5e30.chunk.js.map",
+    "runtime-main.js": "/dragndrop/static/js/runtime-main.bdb7484d.js",
+    "runtime-main.js.map": "/dragndrop/static/js/runtime-main.bdb7484d.js.map",
+    "static/js/2.930fcd86.chunk.js": "/dragndrop/static/js/2.930fcd86.chunk.js",
+    "static/js/2.930fcd86.chunk.js.map": "/dragndrop/static/js/2.930fcd86.chunk.js.map",
+    "static/js/3.1d176183.chunk.js": "/dragndrop/static/js/3.1d176183.chunk.js",
+    "static/js/3.1d176183.chunk.js.map": "/dragndrop/static/js/3.1d176183.chunk.js.map",
     "index.html": "/dragndrop/index.html",
     "static/css/main.6dea0f05.chunk.css.map": "/dragndrop/static/css/main.6dea0f05.chunk.css.map",
-    "static/js/2.a486d477.chunk.js.LICENSE.txt": "/dragndrop/static/js/2.a486d477.chunk.js.LICENSE.txt"
+    "static/js/2.930fcd86.chunk.js.LICENSE.txt": "/dragndrop/static/js/2.930fcd86.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.b6f44378.js",
-    "static/js/2.a486d477.chunk.js",
+    "static/js/runtime-main.bdb7484d.js",
+    "static/js/2.930fcd86.chunk.js",
     "static/css/main.6dea0f05.chunk.css",
-    "static/js/main.48ef9043.chunk.js"
+    "static/js/main.611d5e30.chunk.js"
   ]
 }

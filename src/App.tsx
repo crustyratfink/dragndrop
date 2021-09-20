@@ -1,7 +1,6 @@
 import { css, Global } from "@emotion/react";
 import styled from "@emotion/styled";
 import { Button } from "@material-ui/core";
-import { ArrowDownward, FormatAlignRightSharp } from "@material-ui/icons";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -14,10 +13,10 @@ const dimensions = [
   { id: "tactic", content: "Tactic", color: "rgba(0, 0, 255, 0.12)" },
 ];
 
-const strategies = ["lower funnel", "mid funnel", "upper funnel"];
-const tactics = ["retargeting", "prospecting"];
-const publishers = ["trade desk", "google", "taboola"];
-const channels = ["display", "video"];
+// const strategies = ["lower funnel", "mid funnel", "upper funnel"];
+// const tactics = ["retargeting", "prospecting"];
+// const publishers = ["trade desk", "google", "taboola"];
+// const channels = ["display", "video"];
 
 const allocations = [
   {
@@ -167,7 +166,7 @@ const App = (props: any) => {
       results[dv] = {};
       results[dv].root = aggs[dv];
       results[dv].children = buildTree(
-        allocs.filter((alloc: any) => alloc[thisLevel.id] == dv),
+        allocs.filter((alloc: any) => alloc[thisLevel.id] === dv),
         newLevels
       );
     });
