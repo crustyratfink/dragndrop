@@ -264,6 +264,7 @@ const App = () => {
           amount: data.amount,
         },
       ]);
+      setData({})
     }
   };
 
@@ -417,7 +418,7 @@ const App = () => {
           {Object.keys(dimensions).map((dim: string) => (
             <FormControl fullWidth>
               <InputLabel htmlFor={dim}>{dim}</InputLabel>
-              <Select name={dim} id={dim} onChange={(e) => addData(e)}>
+              <Select name={dim} id={dim} value={data[dim] || ''} onChange={(e) => addData(e)}>
                 {/* @ts-ignore */}
                 {dimensions[dim].options.map((opt) => (
                   <MenuItem value={opt}>{opt}</MenuItem>
@@ -426,7 +427,7 @@ const App = () => {
             </FormControl>
           ))}
           <FormControl fullWidth>
-            <TextField id="amount" name="amount" type="number" helperText="Amount" placeholder="Amount" onBlur={(e) => {if(e.target.value) {addData(e)}}} />
+            <TextField id="amount" value={data.amount || ''} name="amount" type="number" helperText="Amount" placeholder="Amount" onChange={(e) => {if(e.target.value) {addData(e)}}} />
           </FormControl>
           <Button color="primary" onClick={handleSubmit} variant="outlined">
             Add Allocation
