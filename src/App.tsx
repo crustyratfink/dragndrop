@@ -1,13 +1,15 @@
 import { css, Global } from "@emotion/react";
 import clsx from "clsx";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Tree, TreeNode } from "react-organizational-chart";
 import { Allocation, AllocationType } from "./components/Allocation";
 import AllocationForm from "./components/AllocationForm";
 import DimensionBlock from "./components/DimensionBlock";
 import DragDrop from "./components/DragDrop";
 import { sampleAllocations, dimensions } from "./lib/data";
-import { aggregate, buildTree } from "./lib/helpers";
+import { aggregate, buildTree, comparePaths } from "./lib/helpers";
+import _ from "lodash";
+import { MoreHoriz } from "@material-ui/icons";
 
 const App = () => {
   const [items, setItems] = useState<any>(dimensions);
@@ -15,73 +17,81 @@ const App = () => {
   const [allocations, setAllocations] = useState<any>(sampleAllocations);
   const [reset, setReset] = useState<boolean>(false);
   const [disappear, setDisappear] = useState<boolean>(false);
+  const [collapsed, setCollapsed] = useState<any[]>([]);
   useEffect(() => {
     setItems(dimensions);
     setAllocations(sampleAllocations);
     setReset(false);
   }, [reset]);
 
+  const collapse = (path: any, hide: boolean = false) => {
+    setDisappear(true);
+    console.log(path, collapsed);
+    setTimeout(() => {
+      if (!hide) {
+        const newCollapsed = _.cloneDeep(collapsed);
+        _.remove(newCollapsed, (i: any) => comparePaths(i, path));
+        setCollapsed(newCollapsed);
+      } else {
+        setCollapsed([...collapsed, path]);
+      }
+      setDisappear(false);
+    }, 250);
+  };
+
   const deleteAllocation = (target: AllocationType) => {
-    console.log(target);
     setAllocations(
       allocations.filter((alloc: AllocationType) => {
-        const pass =
-          !(target.strategy === alloc.strategy &&
+        const pass = !(
+          target.strategy === alloc.strategy &&
           target.publisher === alloc.publisher &&
           target.tactic === alloc.tactic &&
-          target.channel === alloc.channel &&
-          target.amount === alloc.amount);
-          console.log(pass)
+          target.channel === alloc.channel
+        );
         return pass;
       })
     );
   };
 
-  const TreeItem = ({ level, item, value }: any) => {
-    return (
-      <DimensionBlock
-        color={dimensions[level].color}
-        level={level}
-        item={item}
-        value={value}
-      />
-    );
-  };
-
-  const handleSubmit = () => {
-    console.log(data);
+  const handleSubmit = (newData: any) => {
+    var submitData: any = {};
+    if (newData) {
+      submitData = JSON.parse(JSON.stringify(newData));
+    } else {
+      submitData = JSON.parse(JSON.stringify(data));
+    }
     if (
-      data.strategy &&
-      data.tactic &&
-      data.channel &&
-      data.publisher &&
-      data.amount
+      submitData.strategy &&
+      submitData.tactic &&
+      submitData.channel &&
+      submitData.publisher &&
+      submitData.amount
     ) {
-      console.log("Setting allocations...", data);
       setAllocations([
         ...allocations,
         {
-          strategy: data.strategy,
-          publisher: data.publisher,
-          tactic: data.tactic,
-          channel: data.channel,
-          amount: data.amount,
+          strategy: submitData.strategy,
+          publisher: submitData.publisher,
+          tactic: submitData.tactic,
+          channel: submitData.channel,
+          amount: submitData.amount,
         },
       ]);
       setData({});
     }
   };
 
-  const addData = (e: any) => {
+  const addData = (name: string, inputValue: string) => {
     var value;
-    if (e.target.name === "amount") {
-      value = parseInt(e.target.value);
+    if (name === "amount") {
+      value = parseInt(inputValue);
     } else {
-      value = e.target.value;
+      value = inputValue;
     }
-    setData({ ...data, [e.target.name]: value });
+    setData({ ...data, [name]: value });
   };
-  console.log(data);
+
+  console.log(collapsed);
 
   const TreeLevel = ({ level, items }: any) => {
     return (
@@ -94,15 +104,33 @@ const App = () => {
           return (
             <TreeNode
               label={
-                <TreeItem level={level} item={item} value={items[item].root} />
+                <DimensionBlock
+                  level={level}
+                  item={item}
+                  value={items[item].root}
+                  path={items[item].path}
+                  color={dimensions[level].color}
+                  handleSubmit={handleSubmit}
+                  deleteAllocation={deleteAllocation}
+                  collapse={collapse}
+                  collapsed={collapsed}
+                  hasChildren={!!childLevel}
+                />
               }
             >
-              {childLevel && (
-                <TreeLevel
-                  level={childLevel}
-                  items={items[item].children[childLevel]}
-                />
-              )}
+              {childLevel &&
+                (!!_.find(collapsed, (i: any) =>
+                  comparePaths(i, items[item].path)
+                ) ? (
+                  <div style={{ placeSelf: "center", width: "100%" }}>
+                    <MoreHoriz />
+                  </div>
+                ) : (
+                  <TreeLevel
+                    level={childLevel}
+                    items={items[item].children[childLevel]}
+                  />
+                ))}
             </TreeNode>
           );
         })}
@@ -111,7 +139,7 @@ const App = () => {
   };
 
   if (!items) return null;
-  const tree = buildTree(allocations, Object.keys(items));
+  const tree = buildTree(allocations, Object.keys(items), {});
   const rootLevel = tree ? Object.keys(tree)[0] : "";
   return (
     <div style={{ display: "grid", gridTemplateColumns: "auto 15%" }}>
@@ -154,6 +182,12 @@ const App = () => {
                   level="Campaign"
                   item="Name"
                   value={aggregate(allocations).total}
+                  path={{}}
+                  deleteAllocation={deleteAllocation}
+                  handleSubmit={handleSubmit}
+                  collapse={collapse}
+                  collapsed={collapsed}
+                  hasChildren={false}
                   style={{
                     display: "flex",
                     flexDirection: "column",
@@ -167,12 +201,12 @@ const App = () => {
           )}
         </div>
 
-        <AllocationForm
+        {/* <AllocationForm
           dimensions={dimensions}
           data={data}
           addData={addData}
           handleSubmit={handleSubmit}
-        />
+        /> */}
       </div>
       <div>
         {allocations.map((alloc: any) => {

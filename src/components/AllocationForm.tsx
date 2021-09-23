@@ -22,9 +22,9 @@ const AllocationForm = ({dimensions, data, addData, handleSubmit}:any) => (
           {Object.keys(dimensions).map((dim: string) => (
             <FormControl fullWidth>
               <InputLabel htmlFor={dim}>{dim}</InputLabel>
-              <Select name={dim} id={dim} value={data[dim] || ''} onChange={(e) => addData(e)}>
-                {/* @ts-ignore */}
-                {dimensions[dim].options.map((opt) => (
+              <Select name={dim} id={dim} value={data[dim] || ''} onChange={(e) => addData(e.target.name, e.target.value)}>
+              <MenuItem value="none">none</MenuItem>
+                {dimensions[dim].options.map((opt:any) => (
                   <MenuItem value={opt}>{opt}</MenuItem>
                 ))}
               </Select>
