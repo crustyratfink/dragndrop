@@ -16,12 +16,13 @@ import { comparePaths } from "../lib/helpers";
 const DimensionBlockOuter = styled.div`
   display: inline-block;
   height: 6em;
-  width: 8em;
+  width: 6em;
   box-shadow: 3px 4px 6px rgba(33, 33, 33, 0.7);
 `;
 
 const DimensionBlockInner = styled.div`
   text-decoration: none;
+  font-size: 10pt;
   padding: 1em;
   box-sizing: border-box;
   width: 100%;
@@ -32,6 +33,7 @@ const DimensionBlockInner = styled.div`
   justify-content: space-around;
   align-items: center;
   background-color: inherit;
+  & .MuiInputBase-input { margin: 0; padding: 0; font-size: 10pt !important; }
 `;
 
 export interface DimensionBlockProps {
@@ -97,9 +99,9 @@ export const DimensionBlock = ({
       <DimensionBlockInner onClick={() => {level!=="Campaign" && setEditMode(true)}}>
         {hasChildren &&
           (isCollapsed() ? (
-            <ArrowUpwardOutlined onClick={() => collapse(path, false)} />
+            <ArrowUpwardOutlined fontSize="small" onClick={() => collapse(path, false)} />
           ) : (
-            <ArrowDownwardOutlined onClick={() => collapse(path, true)} />
+            <ArrowDownwardOutlined fontSize="small" onClick={() => collapse(path, true)} />
           ))}
         <div>{level}</div>
         <div>{item}</div>
