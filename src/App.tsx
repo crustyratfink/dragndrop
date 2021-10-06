@@ -13,6 +13,7 @@ import { MoreHoriz } from "@material-ui/icons";
 
 const App = () => {
   const [items, setItems] = useState<any>(dimensions);
+  const [parked, setParked] = useState<any>();
   const [data, setData] = useState<any>({});
   const [allocations, setAllocations] = useState<any>(sampleAllocations);
   const [reset, setReset] = useState<boolean>(false);
@@ -67,7 +68,7 @@ const App = () => {
       submitData.publisher &&
       submitData.amount
     ) {
-      setAllocations([
+      const newAllocations = [
         ...allocations,
         {
           strategy: submitData.strategy,
@@ -76,7 +77,8 @@ const App = () => {
           channel: submitData.channel,
           amount: submitData.amount,
         },
-      ]);
+      ];
+      setAllocations(newAllocations);
       setData({});
     }
   };
@@ -105,6 +107,7 @@ const App = () => {
             <TreeNode
               label={
                 <DimensionBlock
+                  allocations={allocations}
                   level={level}
                   item={item}
                   value={items[item].root}
@@ -139,7 +142,7 @@ const App = () => {
   };
 
   if (!items) return null;
-  const tree = buildTree(allocations, Object.keys(items), {});
+  const tree = buildTree(allocations, Object.keys(items), []);
   const rootLevel = tree ? Object.keys(tree)[0] : "";
   return (
     <div style={{ display: "grid", gridTemplateColumns: "auto 15%" }}>
@@ -156,6 +159,8 @@ const App = () => {
         />
         <DragDrop
           items={items}
+          parked={parked}
+          setParked={setParked}
           setItems={setItems}
           dimensions={dimensions}
           setDisappear={setDisappear}
@@ -178,6 +183,7 @@ const App = () => {
               lineBorderRadius={"10px"}
               label={
                 <DimensionBlock
+                  allocations={allocations}
                   color="lightgray"
                   level="Campaign"
                   item="Name"

@@ -1,6 +1,4 @@
 export const comparePaths: (item: any, path: any) => boolean = (item, path) => {
-  console.log(item)
-  console.log(path)
   return (
     item.strategy === path.strategy &&
     item.tactic === path.tactic &&
@@ -45,8 +43,7 @@ export const buildTree = (allocs: any, levels: any[], path: any) => {
   const result: any = {};
   dimVals.forEach((dv: string) => {
     results[dv] = {};
-    const newPath = JSON.parse(JSON.stringify(path));
-    newPath[thisLevel] = dv;
+    const newPath = {...JSON.parse(JSON.stringify(path)), [thisLevel]: dv};
     results[dv].path = newPath;
     results[dv].root = aggs[dv];
     results[dv].children = buildTree(

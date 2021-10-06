@@ -31,7 +31,7 @@ const getListStyle = (isDraggingOver: boolean) => ({
   overflow: "auto",
 });
 
-export const DragDrop = ({items, setItems, dimensions, setDisappear, setReset}:any) => {
+export const DragDrop = ({parked, items, setItems, dimensions, setDisappear, setReset}:any) => {
 
   const shutUp = (itemId: string) => {
     const newItems = JSON.parse(JSON.stringify(items));
@@ -60,13 +60,14 @@ export const DragDrop = ({items, setItems, dimensions, setDisappear, setReset}:a
   };
   return(
     <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
-        <Droppable droppableId="droppable" direction="horizontal">
+      <div  style={{display: 'flex', flexDirection: 'row'}}>
+        <Droppable droppableId="hierarchy" direction="horizontal">
           {(provided: any, snapshot: any) => (
             <div
               style={{
                 display: "flex",
                 flexDirection: "row",
-                margin: "60px auto 60px 0",
+                margin: "60px auto",
                 justifyContent: "space-around",
               }}
             >
@@ -84,7 +85,6 @@ export const DragDrop = ({items, setItems, dimensions, setDisappear, setReset}:a
                   Reset
                 </Button>
                 {Object.keys(items).map((item: string, index: number) => {
-                  console.log(items, item);
                   return (
                     <Draggable key={item} draggableId={item} index={index}>
                       {(provided: any, snapshot: any) => (
@@ -109,6 +109,46 @@ export const DragDrop = ({items, setItems, dimensions, setDisappear, setReset}:a
             </div>
           )}
         </Droppable>
+        {/* <Droppable droppableId="parkingLot" direction="horizontal">
+          {(provided: any, snapshot: any) => (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                margin: "60px auto 60px 0",
+                justifyContent: "space-around",
+              }}
+            >
+              <div
+                ref={provided.innerRef}
+                style={getListStyle(snapshot.isDraggingOver)}
+                {...provided.droppableProps}
+              >
+                {Object.keys(parked).map((item: string, index: number) => {
+                  return (
+                    <Draggable key={item} draggableId={item} index={index}>
+                      {(provided: any, snapshot: any) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          style={getItemStyle(
+                            snapshot.isDragging,
+                            provided.draggableProps.style
+                          )}
+                        >
+                          {items[item].content}
+                        </div>
+                      )}
+                    </Draggable>
+                  );
+                })}
+                {provided.placeholder}
+              </div>
+            </div>
+          )}
+        </Droppable> */}
+        </div>
       </DragDropContext>
   )
 }
