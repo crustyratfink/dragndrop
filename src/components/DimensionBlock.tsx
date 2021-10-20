@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Button, TextField } from "@material-ui/core";
+import { Button, MenuItem, Select, TextField } from "@material-ui/core";
 import {
   Add,
   ArrowDownwardOutlined,
@@ -40,6 +40,8 @@ const DimensionBlockInner = styled.div`
 `;
 
 export interface DimensionBlockProps {
+  ids: number[];
+  updateAllocation?: any;
   color: string;
   level: string;
   item: string;
@@ -52,9 +54,12 @@ export interface DimensionBlockProps {
   collapse: any;
   hasChildren: boolean;
   allocations: any[];
+  options: any[];
 }
 
 export const DimensionBlock = ({
+  ids,
+  updateAllocation,
   color,
   level,
   item,
@@ -66,11 +71,13 @@ export const DimensionBlock = ({
   collapse,
   hasChildren,
   allocations,
+  options,
   style = {},
 }: DimensionBlockProps) => {
   const [editMode, setEditMode] = useState<Boolean>(false);
   const newValueRef = useRef<HTMLInputElement>(null);
-  console.log(allocations, path);
+  const [newItem, setNewItem] = useState<any>(item);
+  console.log(level, item, ids);
   const createOffsetAllocation = () => {
     const newValue = parseInt(newValueRef.current!.value);
     const offset = newValue - value;
@@ -78,7 +85,6 @@ export const DimensionBlock = ({
       const newData: { [dim: string]: string | number } = {};
       Object.keys(dimensions).forEach((dim: string) => {
         const thisDim = path[dim];
-        console.log(thisDim)
         if (thisDim) {
           newData[dim] = thisDim;
         } else {
@@ -86,9 +92,7 @@ export const DimensionBlock = ({
         }
       });
       newData.amount = offset;
-      console.log(newData, path);
       const pathKeys = Object.keys(path);
-      console.log(path[pathKeys[pathKeys.length - 2]]);
       handleSubmit(newData);
     }
   };
@@ -98,11 +102,12 @@ export const DimensionBlock = ({
   }
   const isCollapsed = () =>
     !!_.find(collapsed, (i: any) => comparePaths(i, path));
+
   const findUnallocatedNeighbor = () => {
-    const pathKeys = Object.keys(path)
+    const pathKeys = Object.keys(path);
     const spec = pathKeys.reduce((acc: any, p: any, i: number) => {
       if (i < pathKeys.length - 1) {
-        return { ...acc, ...path[p] };
+        return { ...acc, [p]: path[p] };
       } else {
         return { ...acc, [p]: "none" };
       }
@@ -113,13 +118,16 @@ export const DimensionBlock = ({
         spec[d] = "none";
       }
     });
-    console.log(
-      allocations.filter((a: any) =>
+    const availableFunds = allocations
+      .filter((a: any) =>
         Object.keys(a).every(
           (dim: string) => dim === "amount" || spec[dim] === a[dim]
         )
       )
-    );
+      .reduce((acc: Number, a: any) => {
+        return acc + a.amount;
+      }, 0);
+    console.log(availableFunds);
   };
   findUnallocatedNeighbor();
   return (
@@ -157,7 +165,7 @@ export const DimensionBlock = ({
           ))}
         <div>{level}</div>
         <div>{item == "none" ? "unallocated" : item}</div>
-        {editMode ? (
+        {editMode && item !== "none" ? (
           <>
             <TextField
               inputRef={newValueRef}
@@ -176,8 +184,35 @@ export const DimensionBlock = ({
               Commit
             </Button>
           </>
+        ) : editMode && item === "none" ? (
+          <>
+            <Select
+              value={newItem}
+              onChange={(e: any) => setNewItem(e.target.value)}
+            >
+              <MenuItem value="none">unallocated</MenuItem>
+              {options.map((o: any) => (
+                <MenuItem value={o}>{o}</MenuItem>
+              ))}
+            </Select>
+            <div>${value}</div>
+            <Button
+              style={{ fontSize: "8pt", padding: 0 }}
+              variant="outlined"
+              onClick={(e: any) => {
+                e.stopPropagation();
+                setEditMode(false);
+                updateAllocation(ids[0], { [level]: newItem });
+              }}
+            >
+              Commit
+            </Button>
+          </>
         ) : (
-          <div>${value}</div>
+          <>
+            <div>${value}</div>
+            <div>{ids.join(",")}</div>
+          </>
         )}
       </DimensionBlockInner>
     </DimensionBlockOuter>

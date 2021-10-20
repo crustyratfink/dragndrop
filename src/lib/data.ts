@@ -23,6 +23,7 @@ export const dimensions:{[k:string]:any} = {
 
 export const sampleAllocations = [
   {
+    id: 1,
     strategy: "lower funnel",
     publisher: "taboola",
     tactic: "retargeting",
@@ -30,6 +31,7 @@ export const sampleAllocations = [
     amount: 1000,
   },
   {
+    id: 2,
     strategy: "mid funnel",
     publisher: "google",
     tactic: "prospecting",
@@ -37,6 +39,7 @@ export const sampleAllocations = [
     amount: 1000,
   },
   {
+    id: 3,
     strategy: "upper funnel",
     publisher: "trade desk",
     tactic: "retargeting",
@@ -44,6 +47,7 @@ export const sampleAllocations = [
     amount: 1000,
   },
   {
+    id: 4,
     strategy: "lower funnel",
     publisher: "google",
     tactic: "retargeting",
@@ -51,6 +55,7 @@ export const sampleAllocations = [
     amount: 1000,
   },
   {
+    id: 5,
     strategy: "mid funnel",
     publisher: "trade desk",
     tactic: "prospecting",
@@ -58,6 +63,7 @@ export const sampleAllocations = [
     amount: 1000,
   },
   {
+    id: 6,
     strategy: "upper funnel",
     publisher: "google",
     tactic: "retargeting",
@@ -65,16 +71,10 @@ export const sampleAllocations = [
     amount: 1000,
   },
   {
+    id: 7,
     strategy: "upper funnel",
     publisher: "trade desk",
     tactic: "prospecting",
-    channel: "display",
-    amount: 1000,
-  },
-  {
-    strategy: "lower funnel",
-    publisher: "taboola",
-    tactic: "retargeting",
     channel: "display",
     amount: 1000,
   },

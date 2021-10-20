@@ -3,6 +3,7 @@ import { Button } from "@material-ui/core";
 import * as React from "react";
 
 export interface AllocationType {
+  id: number;
   strategy: string;
   publisher: string;
   tactic: string;
@@ -38,9 +39,13 @@ export const Allocation = ({
   allocation,
   deleteAllocation,
 }: AllocationProps) => {
-  const { strategy, publisher, tactic, channel, amount } = allocation;
+  const { id, strategy, publisher, tactic, channel, amount } = allocation;
   return (
     <AllocBlock>
+            <Item>
+        <Header>ID: </Header>
+        <div>{id}</div>
+      </Item>
       <Item>
         <Header>Strategy: </Header>
         <div>{strategy}</div>

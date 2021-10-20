@@ -26,10 +26,14 @@ export const aggregate = (allocations: any[], field: string = "total") => {
     if (field === "total") {
       agg.total = (agg.total ?? 0) + alloc.amount;
     } else {
-      agg[alloc[field]] = (agg[alloc[field]] ?? 0) + alloc.amount;
+      console.log(alloc)
+      const ids = (agg[alloc[field]]?.allocations ?? [])
+      ids.push(alloc.id)
+      agg[alloc[field]] = {value: (agg[alloc[field]]?.value ?? 0) + alloc.amount, allocations: ids};
     }
     return agg;
   }, {});
+  console.log(JSON.stringify(aggs))
   return aggs;
 };
 
@@ -45,7 +49,8 @@ export const buildTree = (allocs: any, levels: any[], path: any) => {
     results[dv] = {};
     const newPath = {...JSON.parse(JSON.stringify(path)), [thisLevel]: dv};
     results[dv].path = newPath;
-    results[dv].root = aggs[dv];
+    results[dv].root = aggs[dv].value;
+    results[dv].allocations = aggs[dv].allocations;
     results[dv].children = buildTree(
       allocs.filter((alloc: any) => alloc[thisLevel!] === dv),
       newLevels,

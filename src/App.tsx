@@ -71,6 +71,7 @@ const App = () => {
       const newAllocations = [
         ...allocations,
         {
+          id: allocations.length + 1,
           strategy: submitData.strategy,
           publisher: submitData.publisher,
           tactic: submitData.tactic,
@@ -93,9 +94,25 @@ const App = () => {
     setData({ ...data, [name]: value });
   };
 
+  const updateAllocation = (id:number, newValue:any) => {
+    const others = allocations.filter((f:any) => (
+      f.id!==id
+    ))
+    const target = allocations.find((f:any) => (
+      f.id===id
+    ))
+    const newTarget = {...target, ...newValue}
+    const newAllocations = [...others, newTarget]
+    console.log(target)
+    console.log(others)
+    console.log(newAllocations)
+    setAllocations(newAllocations)
+  }
+
   console.log(collapsed);
 
   const TreeLevel = ({ level, items }: any) => {
+    console.log(items)
     return (
       <>
         {Object.keys(items).map((item: any) => {
@@ -107,6 +124,8 @@ const App = () => {
             <TreeNode
               label={
                 <DimensionBlock
+                  updateAllocation={updateAllocation}
+                  ids={items[item].allocations}
                   allocations={allocations}
                   level={level}
                   item={item}
@@ -118,6 +137,7 @@ const App = () => {
                   collapse={collapse}
                   collapsed={collapsed}
                   hasChildren={!!childLevel}
+                  options={dimensions[level].options}
                 />
               }
             >
@@ -183,6 +203,8 @@ const App = () => {
               lineBorderRadius={"10px"}
               label={
                 <DimensionBlock
+                  ids={[]}
+                  options={[]}
                   allocations={allocations}
                   color="lightgray"
                   level="Campaign"
