@@ -12,7 +12,7 @@ import _ from "lodash";
 import { MoreHoriz } from "@material-ui/icons";
 import language from "./lib/language";
 import { Typography } from "@material-ui/core";
-import nlp from 'compromise'
+import nlp from "compromise";
 
 const App = () => {
   const [items, setItems] = useState<any>(dimensions);
@@ -22,23 +22,25 @@ const App = () => {
   const [reset, setReset] = useState<boolean>(false);
   const [disappear, setDisappear] = useState<boolean>(false);
   const [collapsed, setCollapsed] = useState<any[]>([]);
-  const [phrase, setPhrase] = useState<string>("Generating...")
+  const [phrase, setPhrase] = useState<string>("Generating...");
 
-  const getRandomInt = (max:number) => {
+  const getRandomInt = (max: number) => {
     return Math.floor(Math.random() * max);
-  }
+  };
   const generatePhrase = () => {
-    const {adjectives, nouns, verbs, adverbs} = language;
-    return `RainONE: ${_.upperFirst(adverbs[getRandomInt(adverbs.length)])} ${nlp(verbs[getRandomInt(verbs.length)]).verbs().toGerund().out()} ${adjectives[getRandomInt(adjectives.length)]} ${nouns[getRandomInt(nouns.length)]} since 2020.`
-  }
+    const { adjectives, nouns, verbs, adverbs } = language;
+    return `RainONE: ${_.upperFirst(
+      adverbs[getRandomInt(adverbs.length)]
+    )} ${nlp(verbs[getRandomInt(verbs.length)]).verbs().toGerund().out()} ${
+      adjectives[getRandomInt(adjectives.length)]
+    } ${nouns[getRandomInt(nouns.length)]} since 2020.`;
+  };
   useEffect(() => {
-    setPhrase(generatePhrase())
+    setPhrase(generatePhrase());
     setItems(dimensions);
     setAllocations(sampleAllocations);
     setReset(false);
   }, [reset]);
-
-
 
   const collapse = (path: any, hide: boolean = false) => {
     setDisappear(true);
@@ -109,25 +111,21 @@ const App = () => {
     setData({ ...data, [name]: value });
   };
 
-  const updateAllocation = (id:number, newValue:any) => {
-    const others = allocations.filter((f:any) => (
-      f.id!==id
-    ))
-    const target = allocations.find((f:any) => (
-      f.id===id
-    ))
-    const newTarget = {...target, ...newValue}
-    const newAllocations = [...others, newTarget]
-    console.log(target)
-    console.log(others)
-    console.log(newAllocations)
-    setAllocations(newAllocations)
-  }
+  const updateAllocation = (id: number, newValue: any) => {
+    const others = allocations.filter((f: any) => f.id !== id);
+    const target = allocations.find((f: any) => f.id === id);
+    const newTarget = { ...target, ...newValue };
+    const newAllocations = [...others, newTarget];
+    console.log(target);
+    console.log(others);
+    console.log(newAllocations);
+    setAllocations(newAllocations);
+  };
 
   console.log(collapsed);
 
   const TreeLevel = ({ level, items }: any) => {
-    console.log(items)
+    console.log(items);
     return (
       <>
         {Object.keys(items).map((item: any) => {
