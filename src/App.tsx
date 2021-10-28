@@ -10,6 +10,9 @@ import { sampleAllocations, dimensions } from "./lib/data";
 import { aggregate, buildTree, comparePaths } from "./lib/helpers";
 import _ from "lodash";
 import { MoreHoriz } from "@material-ui/icons";
+import language from "./lib/language";
+import { Typography } from "@material-ui/core";
+import nlp from 'compromise'
 
 const App = () => {
   const [items, setItems] = useState<any>(dimensions);
@@ -19,11 +22,23 @@ const App = () => {
   const [reset, setReset] = useState<boolean>(false);
   const [disappear, setDisappear] = useState<boolean>(false);
   const [collapsed, setCollapsed] = useState<any[]>([]);
+  const [phrase, setPhrase] = useState<string>("Generating...")
+
+  const getRandomInt = (max:number) => {
+    return Math.floor(Math.random() * max);
+  }
+  const generatePhrase = () => {
+    const {adjectives, nouns, verbs, adverbs} = language;
+    return `RainONE: ${_.upperFirst(adverbs[getRandomInt(adverbs.length)])} ${nlp(verbs[getRandomInt(verbs.length)]).verbs().toGerund().out()} ${adjectives[getRandomInt(adjectives.length)]} ${nouns[getRandomInt(nouns.length)]} since 2020.`
+  }
   useEffect(() => {
+    setPhrase(generatePhrase())
     setItems(dimensions);
     setAllocations(sampleAllocations);
     setReset(false);
   }, [reset]);
+
+
 
   const collapse = (path: any, hide: boolean = false) => {
     setDisappear(true);
@@ -177,6 +192,7 @@ const App = () => {
             }
           `}
         />
+        <Typography variant="h4">{phrase}</Typography>
         <DragDrop
           items={items}
           parked={parked}
