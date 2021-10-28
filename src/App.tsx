@@ -29,6 +29,10 @@ const App = () => {
   };
   const generatePhrase = () => {
     const { adjectives, nouns, verbs, adverbs } = language;
+    var gerund = nlp(verbs[getRandomInt(verbs.length)]).verbs().toGerund().out()
+    while(!gerund) {
+      gerund = nlp(verbs[getRandomInt(verbs.length)]).verbs().toGerund().out()
+    }
     return `RainONE: ${_.upperFirst(
       adverbs[getRandomInt(adverbs.length)]
     )} ${nlp(verbs[getRandomInt(verbs.length)]).verbs().toGerund().out()} ${
